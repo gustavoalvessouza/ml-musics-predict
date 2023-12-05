@@ -15,6 +15,9 @@ function SignUp() {
         username,
         password,
       });
+
+      console.log(user)
+
       localStorage.setItem("userId", user.id);
       navigate("/musics");
     } catch (err) {

@@ -28,7 +28,7 @@ function Musics() {
   const [musicList, setMusicList] = useState([]);
 
   const formFields = [
-    { fieldName: "name", type: "number" },
+    { fieldName: "name", type: "text" },
     { fieldName: "dance", type: "number" },
     { fieldName: "energy", type: "number" },
     { fieldName: "key", type: "number" },
@@ -38,16 +38,44 @@ function Musics() {
     { fieldName: "time", type: "number" },
   ];
 
+
+  async function loadMusics() {
+    try {
+      const userId = localStorage.getItem("userId");
+      
+
+      console.log(userId)
+
+      await axios.get(
+        `http://127.0.0.1:5000/api/predicts/${userId}`
+      ).then((res)=> setMusicList(res.data.musics));
+
+      
+    } catch (err) {
+      console.error(err);
+    }
+  }
+
   const handleSubmitPredict = async (values) => {
     try {
-      const userId = Number(localStorage.getItem("userId"));
+      const userId = localStorage.getItem("userId")
 
       await axios.post("http://127.0.0.1:5000/api/predicts", {
         ...values,
         userId,
-      });
+      }).then(async (res)=> {
 
-      setIsModalOpen(false);
+        setIsModalOpen(false);
+
+        await loadMusics()
+
+      } ).catch((err)=> 
+       { console.log(err)
+        setIsModalOpen(false)}
+      );
+
+
+
     } catch (err) {
       console.error(err);
     }
@@ -56,13 +84,13 @@ function Musics() {
   useEffect(() => {
     async function loadMusics() {
       try {
-        const userId = Number(localStorage.getItem("userId"));
+        const userId = localStorage.getItem("userId");
 
-        const { musics } = await axios.get(
+        await axios.get(
           `http://127.0.0.1:5000/api/predicts/${userId}`
-        );
+        ).then((res)=> setMusicList(res.data.musics));
 
-        setMusicList(musics);
+        
       } catch (err) {
         console.error(err);
       }
@@ -175,9 +203,9 @@ function Musics() {
               </TableRow>
             </TableHead>
             <TableBody>
-              {musicList.map((row) => (
+              {musicList.map((row,i) => (
                 <TableRow
-                  key={row.name}
+                  key={i}
                   sx={{ "&:last-child td, &:last-child th": { border: 0 } }}
                 >
                   <TableCell component="th" scope="row">

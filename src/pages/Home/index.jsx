@@ -11,12 +11,16 @@ function Home() {
 
   const signIn = async () => {
     try {
-      const { user } = await axios.post("http://127.0.0.1:5000/api/login", {
+      await axios.post("http://127.0.0.1:5000/api/login", {
         username,
         password,
+      }).then((res)=> {
+        localStorage.setItem("userId", res.data.user.id);
+        navigate("/musics");
       });
-      localStorage.setItem("userId", user.id);
-      navigate("/musics");
+
+
+     
     } catch (err) {
       console.error(err);
     }
